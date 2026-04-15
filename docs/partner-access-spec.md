@@ -143,3 +143,55 @@
   - Excel 호환 복사/붙여넣기 지원
   - 키보드 네비게이션, 셀 편집 모드 내장
   - 사내 업무용 사용에 라이선스 제약 없음
+
+---
+
+## 4. 인증 구조
+
+### 개요
+
+외부 접근 보호를 위한 TOTP(Time-based One-Time Password) 기반 인증을 적용한다. 인증은 별도의 Flask 서비스(`auth`)로 분리되어 있으며, nginx의 `auth_request` 서브리퀘스트를 통해 모든 보호 대상 경로에 대해 인증 여부를 검증한다.
+
+### 인증 흐름
+
+```
+사용자 요청 → nginx (auth_request → auth:5000/auth)
+  ├─ 200 (인증 성공) → 요청 계속 처리 (SPA 또는 API)
+  └─ 401 (미인증)   → 302 /login?rd={원래 URL} 리다이렉트
+```
+
+### 구성 요소
+
+| 서비스 | 역할 |
+|--------|------|
+| `auth` (Flask, port 5000) | TOTP 검증, 세션 쿠키 발급/검증, 로그인/로그아웃 처리 |
+| `frontend` nginx | `auth_request` 서브리퀘스트로 인증 게이트 역할 |
+
+### 주요 엔드포인트
+
+| 경로 | 인증 필요 | 설명 |
+|------|-----------|------|
+| `/login` | X | TOTP 로그인 페이지 (최초 1회만 QR 코드 표시) |
+| `/logout` | X | 세션 쿠키 삭제 후 `/login`으로 리다이렉트 |
+| `/auth` | - | nginx 내부 서브리퀘스트 전용 (200/401 반환) |
+| `/api/*` | O | 백엔드 API |
+| `/` | O | SPA 프론트엔드 |
+
+### 세션 관리
+
+- **쿠키명**: `totp_session`
+- **서명**: HMAC-SHA256 (`COOKIE_SECRET` 환경변수)
+- **유효기간**: `SESSION_DURATION` 환경변수 (기본 86400초 = 24시간)
+- **속성**: `HttpOnly`, `SameSite=Lax`
+- **형식**: `{만료타임스탬프}.{HMAC서명}`
+
+### QR 코드 보안
+
+- TOTP secret은 `/data/totp_secret.json`에 저장 (Docker volume `auth-data`)
+- 최초 로그인 성공 시 `registered: true`로 플래그 설정
+- 이후 로그인 페이지에서 QR 코드 및 secret 비노출
+
+### 캐시 제어
+
+- SPA 경로(`/`)에 `Cache-Control: no-store, no-cache, must-revalidate` 적용
+- 로그아웃 후 브라우저 캐시로 인한 미인증 접근 방지

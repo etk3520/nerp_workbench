@@ -99,3 +99,20 @@ body {
 .markdown-body strong { font-weight: 600; }
 .markdown-body a { color: var(--color-accent); text-decoration: none; }
 .markdown-body a:hover { text-decoration: underline; }
+
+/* AG Grid border styling */
+.ag-header-cell {
+  border-right: 1px solid var(--color-border) !important;
+}
+.ag-header {
+  border-bottom: 2px solid var(--color-border) !important;
+}
+.ag-cell {
+  border-right: 1px solid var(--color-border-light) !important;
+}
+.ag-row {
+  border-bottom: 1px solid var(--color-border-light) !important;
+}
+.ag-root-wrapper {
+  border: 1px solid var(--color-border) !important;
+}

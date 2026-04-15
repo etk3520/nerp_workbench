@@ -13,6 +13,7 @@ class PartnerEntry(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     # 입력 컬럼
+    category: Mapped[Optional[str]] = mapped_column(nullable=True)  # 구분: 과제/ITO
     project_name: Mapped[Optional[str]] = mapped_column(nullable=True)
     project_pm: Mapped[Optional[str]] = mapped_column(nullable=True)
     module: Mapped[Optional[str]] = mapped_column(nullable=True)
@@ -24,6 +25,7 @@ class PartnerEntry(Base):
     email: Mapped[Optional[str]] = mapped_column(nullable=True)
     start_date: Mapped[Optional[str]] = mapped_column(nullable=True)
     end_date: Mapped[Optional[str]] = mapped_column(nullable=True)
+    remark: Mapped[Optional[str]] = mapped_column(nullable=True)  # 비고
 
     # 신청 항목 Checkbox
     req_pledge: Mapped[bool] = mapped_column(default=False)
@@ -37,7 +39,7 @@ class PartnerEntry(Base):
     ad_to: Mapped[Optional[str]] = mapped_column(nullable=True)
     srbs_from: Mapped[Optional[str]] = mapped_column(nullable=True)
     srbs_to: Mapped[Optional[str]] = mapped_column(nullable=True)
-    status: Mapped[str] = mapped_column(default="신규신청")
+    status: Mapped[str] = mapped_column(default="임시저장")
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now()

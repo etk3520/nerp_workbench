@@ -111,6 +111,35 @@ function Layout() {
               관리자
             </span>
           </div>
+          <div
+            style={{
+              width: 1,
+              height: 20,
+              background: "rgba(255,255,255,0.15)",
+            }}
+          />
+          <button
+            onClick={() => { window.location.href = "/logout"; }}
+            style={{
+              background: "transparent",
+              border: "1px solid rgba(255,255,255,0.2)",
+              borderRadius: 4,
+              color: "rgba(255,255,255,0.7)",
+              fontSize: 12,
+              padding: "4px 12px",
+              cursor: "pointer",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+              e.currentTarget.style.color = "#fff";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.color = "rgba(255,255,255,0.7)";
+            }}
+          >
+            Logout
+          </button>
         </div>
       </header>
 
